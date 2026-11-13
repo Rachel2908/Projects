@@ -1,0 +1,22 @@
+
+List<Attachment_Metadata__c> quoteAttachments = [
+    SELECT Id, Name, Doc_Id__c, Doc_Type__c, Category__c
+    FROM Attachment_Metadata__c
+    WHERE Account_Id__c IN :accountIds
+    AND Status__c = 'Success'
+    AND Category__c = 'Quotes'
+    WITH SECURITY_ENFORCED
+];
+
+for (Attachment_Metadata__c att : quoteAttachments) {
+    String attachmentRecId = (String)att.Id;
+    String fnUrl = DocumentDetailsRelatedListController.downloadFileEndpoint(attachmentRecId);
+
+    results.add(new QuoteProposalWrapper(
+        att.Name,
+        att.Doc_Type__c,
+        att.Category__c,
+        att.Doc_Id__c,
+        fnUrl
+    ));
+}
